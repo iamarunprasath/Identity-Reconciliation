@@ -1,5 +1,5 @@
 -- CreateTable
-CREATE TABLE "Post" (
+CREATE TABLE "Contact" (
     "id" SERIAL NOT NULL,
     "phoneNumber" TEXT,
     "email" TEXT,
@@ -9,5 +9,5 @@ CREATE TABLE "Post" (
     "updatedAt" TIMESTAMP(3) NOT NULL,
     "deletedAt" TIMESTAMP(3),
 
-    CONSTRAINT "Post_pkey" PRIMARY KEY ("id")
+    CONSTRAINT "Contact_pkey" PRIMARY KEY ("id")
 );
