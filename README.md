@@ -1,9 +1,13 @@
 # Identity-Reconciliation
 
 
-route endpoint: {domain}/api/indentify
+route endpoint: **{domain}/api/indentify**
+
+
 Method: POST
-example: localhost:5002/api/identify
+
+
+example: **localhost:5002/api/identify**
 
 Required ENV Variables
 
