@@ -4,7 +4,7 @@
   "description": "",
   "main": "./src/index.js",
   "engines": {
-    "node": ">=16.13"
+    "node": ">=16.13 <18.0.0"
   },  
   "scripts": {
     "start": "ts-node ./src/index.ts",
