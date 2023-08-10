@@ -1,0 +1,8 @@
+buildCommand: npm install && npm run build
+startCommand: npm run start
+
+services:
+  - name: Identity-Reconciliation
+    type: web
+    buildCommand: npm install && npm run build
+    startCommand: npm run start
