@@ -5,7 +5,7 @@ import {
   customerType,
 } from "../../Interfaces/Customer.interface";
 import { LinkedPrecedence } from "../../Common/enumVariables";
-import prisma from "../../common/prismaClient";
+import prisma from "../../Common/prismaClient";
 
 /**
  *

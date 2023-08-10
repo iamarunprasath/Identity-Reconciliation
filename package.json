@@ -7,9 +7,9 @@
     "node": ">=16.13 <18.0.0"
   },  
   "scripts": {
-    "start": "ts-node ./src/index.ts",
+    "start": "node ./build/index.ts",
     "startDev": "nodemon ./src/index.ts",
-    "compile": "tsc",
+    "build": "prisma generate && tsc",
     "test": "echo \"Error: no test specified\" && exit 1"
   },
   "repository": {
