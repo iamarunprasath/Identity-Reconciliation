@@ -38,21 +38,19 @@ export const handleCustomerIdentity = async (req: Request, res: Response) => {
 
     if (!sharingCustomer.length) {
       await createNewCustomer(email, phoneNumber);
+      const result = await prepareResponse(email, phoneNumber);
+      return res.status(200).send(result);
     }
 
     const primaryCustomerId = sharingCustomer.length
       ? sharingCustomer[0].id
       : 0;
 
-    let isEmailExists = true;
-    let isPhoneExists = true;
-    await Promise.all(
-      sharingCustomer.map(async (customer, index) => {
-        if (
-          index !== 0 &&
-          customer.linkPrecedence === LinkedPrecedence.primary
-        ) {
-          const updatedCustomer: customerType = {
+    let isExists = false;
+    for (const [index, customer] of sharingCustomer.entries()) {
+      if (index !== 0) {
+        if (customer.linkPrecedence === LinkedPrecedence.primary) {
+          const updatedCustomer = {
             id: customer.id,
             phoneNumber: customer.phoneNumber,
             email: customer.email,
@@ -62,13 +60,16 @@ export const handleCustomerIdentity = async (req: Request, res: Response) => {
           await updateCustomer(updatedCustomer);
         }
 
-        isEmailExists = email && customer.email !== email ? false : true;
-        isPhoneExists =
-          phoneNumber && customer.phoneNumber !== phoneNumber ? false : true;
-      })
-    );
+        if (
+          (email && customer.email === email) ||
+          (phoneNumber && customer.phoneNumber === phoneNumber)
+        ) {
+          isExists = true;
+        }
+      }
+    }
 
-    if (!isEmailExists || !isPhoneExists) {
+    if (!isExists) {
       await createSecondaryCustomer(
         email,
         phoneNumber,
@@ -223,17 +224,17 @@ async function prepareResponse(
     if (customer?.phoneNumber) {
       phoneNumberSet.add(customer.phoneNumber);
     }
-    if (customer?.linkPrecedence !== LinkedPrecedence.primary) {
-      secondaryContactIdsSet.add(customer.id);
-    }
+    secondaryContactIdsSet.add(customer.id);
   }
 
   const transformedOutput: CustomerResponse = {
     contact: {
+      primaryContactId: primaryId,
       email: Array.from(emailSet),
       phoneNumber: Array.from(phoneNumberSet),
-      secondaryContactIds: Array.from(secondaryContactIdsSet),
-      primaryContactId: primaryId,
+      secondaryContactIds: Array.from(secondaryContactIdsSet).filter(
+        (e) => e !== primaryId
+      ),
     },
   };
 
@@ -251,10 +252,13 @@ const getAllLinkedIds = async (initialIds: number[]): Promise<number[]> => {
         linkedId: true,
       },
       where: {
-        id: { in: Array.from(intialSetIds) },
+        OR: [
+          { id: { in: Array.from(intialSetIds) } },
+          { linkedId: { in: Array.from(intialSetIds) } },
+        ],
       },
     });
-    
+
     for (const record of recordIds) {
       intialSetIds.add(record.id);
       if (record.linkedId) {
